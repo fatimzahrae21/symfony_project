@@ -1,0 +1,10 @@
+{% extends 'base.html.twig'%}
+
+{% block title 'show resipe '%}
+
+{% block body%}
+  {{ slug}} 
+  {# {{ person.firstname}} {{ person.lastname}} #}
+
+  {{ person.firstname ~ person.lastname}}
+{% endblock %}
