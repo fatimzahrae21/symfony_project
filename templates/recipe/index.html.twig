@@ -30,10 +30,11 @@
  repair, and overall function. It encompasses a wide range of natural and prepared substances, including fruits, vegetables, grains, proteins, and fats. Each food group plays a vital role in maintaining health: proteins build and repair tissues, carbohydrates provide energy, fats support cell function, and vitamins and minerals help regulate bodily processes. Food also plays an important cultural and social role,
   bringing people together for shared meals and celebrations.</p>
 <ul>
+{% for recipe in recipes %}
 <li>
-<a href="{{ path('recipe.show' , {id: 2 , slug:'pate-b'})}}">Pàtes bolognaise</a>
+<a href="{{ path('recipe.show' , {id: recipe.id , slug: recipe.slug })}}"> {{ recipe.title() }}</a>
 </li>
 
-
+{% endfor %}
 </ul>
 {% endblock %}
