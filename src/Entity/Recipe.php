@@ -26,9 +26,7 @@ class Recipe
     #[Assert\Length(min: 5)]
     private ?string $slug = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $content = null;
-
+   
     #[ORM\Column(type: Types::TEXT)]
     private ?string $contenu = null;
 
@@ -73,17 +71,6 @@ class Recipe
         return $this;
     }
 
-    public function getContent(): ?string
-    {
-        return $this->content;
-    }
-
-    public function setContent(string $content): static
-    {
-        $this->content = $content;
-
-        return $this;
-    }
 
     public function getContenu(): ?string
     {

@@ -23,7 +23,6 @@ class RecipeType extends AbstractType
                 'required' => false ,
                 // 'constraints' => new Length(min: 10)
             ])
-            ->add('content')
             ->add('contenu')
             // ->add('createdAt', null, [
             //     'widget' => 'single_text',

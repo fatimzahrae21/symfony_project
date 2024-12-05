@@ -11,14 +11,14 @@
         {% block stylesheets %}
         {% endblock %}
 
-        {# {% block javascripts %}
+        {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %} #}
+        {% endblock %}
     </head>
     <body>
 
 <nav class="navbar navbar-expand-lg" style="background-color: #e3f2fd;"  data-bs-theme="dark">
-=
+
 <div class="container-fluid">
     <a classe="navbar-brand" href="{{ path('home')}}">Mon Site </a>
     <div class="collapse navbar-collapse">
@@ -35,7 +35,9 @@
     <div class="container my-4">
     {% include 'partials/flash.html.twig' %}
    
-    {% block body %}{% endblock %}
+    {% block body %}
+  
+    {% endblock %}
     </div>
     </body>
 </html>
