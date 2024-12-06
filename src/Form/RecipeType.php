@@ -15,6 +15,10 @@ use Symfony\Component\Validator\Constraints\Length;
 
 class RecipeType extends AbstractType
 {
+    public function __construct(private FormListenerFactory $listenerfactory)
+    {
+        
+    }
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -32,21 +36,12 @@ class RecipeType extends AbstractType
             // ])
             ->add('duration')
             ->add('Save' ,SubmitType::class)
-            ->addEventListener(FormEvents::PRE_SUBMIT, $this->autoSlug(...))
+            ->addEventListener(FormEvents::PRE_SUBMIT, $this->listenerfactory->autoSlug('title'))
+            ->addEventListener(FormEvents::PRE_SUBMIT, $this->listenerfactory->timestamps())
 
         ;
     }
-    public function autoSlug(PreSubmitEvent $event): void
-    {
-        $data = $event->getData();
-        if(empty($data['slug'])){
-            $slugger = new AsciiSlugger();
-            $data['slug'] = strtolower($slugger->slug($data['title']));
-            $event->setData($data);
-
-        }
-
-    }   
+   
 
     public function configureOptions(OptionsResolver $resolver): void
     {
