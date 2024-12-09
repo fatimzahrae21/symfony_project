@@ -1,11 +1,21 @@
-{% extends 'admin/admin.html.twig' %}
 
-{% block title 'Editer une Catégorie' %}
 
-{% block body %}
+{% extends 'admin/admin.html.twig'%}
 
-    <h1>Editer une Catégorie {{ category.name }}</h1>
-    
-    {{ form(form) }}
 
+
+{% block body%}
+ 
+
+  <h1>{{ category.name}} </h1>
+
+
+ {{  form_start(form) }}
+
+ <div class="d-flex">
+ {{ form_row(form.name)}}
+  {{ form_row(form.slug)}}
+
+ </div>
+  {{  form_end(form) }}
 {% endblock %}

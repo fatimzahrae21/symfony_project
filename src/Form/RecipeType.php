@@ -3,8 +3,10 @@
 namespace App\Form;
 
 use App\Entity\Recipe;
+use Symfony\Component\DomCrawler\Image;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PreSubmitEvent;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -27,11 +29,17 @@ class RecipeType extends AbstractType
                 'required' => false ,
                 // 'constraints' => new Length(min: 10)
             ])
+            ->add('thumbnailFile' , FileType::class ,[
+                'mapped' => false,
+                'constraints' => [
+                    // new Image()
+                ]
+            ])
             ->add('contenu')
             // ->add('createdAt', null, [
             //     'widget' => 'single_text',
             // ])
-            // ->add('updatedAt', null, [
+            // ->add('udatedAt', null, [
             //     'widget' => 'single_text',
             // ])
             ->add('duration')

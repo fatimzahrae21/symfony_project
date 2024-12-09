@@ -1,68 +1,44 @@
-{# {% extends 'base.html.twig' %}
-
-{% block title %}Hello RecipeController!{% endblock %}
-
-{% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/hamza.ASSURANCE/projet_symfony/src/Controller/RecipeController.php</code></li>
-        <li>Your template at <code>C:/Users/hamza.ASSURANCE/projet_symfony/templates/recipe/index.html.twig</code></li>
-    </ul>
-</div>
-{% endblock %} #}
-
-{# {% block title %} all recettes{% endblock%} #}
-{% block title 'all recipces' %}
 {% extends 'admin/admin.html.twig' %}
 
+{% block title 'All Recipes' %}
 
 {% block body %}
- <p>Food is essential for sustaining life and providing energy, 
- as it fuels the body with the nutrients needed for growth, 
- repair, and overall function. It encompasses a wide range of natural and prepared substances, including fruits, vegetables, grains, proteins, and fats. Each food group plays a vital role in maintaining health: proteins build and repair tissues, carbohydrates provide energy, fats support cell function, and vitamins and minerals help regulate bodily processes. Food also plays an important cultural and social role,
-  bringing people together for shared meals and celebrations.</p>
-{# <ul>
-{% for recipe in recipes %}
-<li>
-<a href="{{ path('recipe.show' , {id: recipe.id , slug: recipe.slug })}}"> {{ recipe.title() }}</a>
-</li>
+<p>
+    <a class="btn btn-primary" href="{{ path('admin.recipe.create') }}">Créer une recette</a>
+</p>
 
-{% endfor %}
-</ul> #}
-<a class="btn btn-primary" href="{{ path('admin.recipe.create' )}}"> Créer une recette  </a>
 <table class="table">
     <thead>
         <tr>
             <th>Titre</th>
-<th>Actions</th>
-</tr>
-</thead>
-<tbody>
-{% for recipe in recipes %}
+                        <th>Category</th>
 
-<tr>
-<td>
-<a href="{{ path('admin.recipe.edit' , { id: recipe.id})}}"> {{ recipe.title}} </a>
-</td>
-<td>
-<div class="d-flex gap-1">
-<a class="btn btn-primary" href="{{ path('admin.recipe.edit' , {id: recipe.id })}}"> Editer </a>
-<form action=" {{ path('admin.recipe.delete' , {id: recipe.id } )}}" method="post">
-    <input type="hidden" name="_method" value="DELETE">
-    <button class="btn btn-danger" type="submit"> supprimer </button>
-    </form>
-</div>
-</td>
-</tr>
-{% endfor %}
-</tbody>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for recipe in recipes %}
+            <tr>
+                <td>
+                    <a href="{{ path('admin.recipe.edit', { id: recipe.id }) }}">{{ recipe.title }}</a>
+                </td> 
+                <td>
+                 {{ recipe.category.name | default('') }}
+                </td>  
+                <td>
+                    <div class="d-flex gap-1">
+                        <a class="btn btn-primary" href="{{ path('admin.recipe.edit', { id: recipe.id }) }}">Editer</a>
+                        
+                      <form method="DELETE" action=" {{ path('admin.recipe.delete' , {id: recipe.id } )}}">
+   <input type="hidden" name="_csrf_token" value="{{ csrf_token('delete' ~ recipe.id) }}">
+ <button class="btn btn-danger" type="submit">Supprimer</button>
+</form>
+
+
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
 </table>
 {% endblock %}

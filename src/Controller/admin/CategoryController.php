@@ -7,6 +7,7 @@ use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 
@@ -14,11 +15,13 @@ use Symfony\Component\Routing\Requirement\Requirement;
 class CategoryController extends AbstractController {
 
 
-    #[Route(name: 'index')]
-    public function index(CategoryRepository $repository){
-
+    #[Route('/' , name: 'index')]
+    public function index(CategoryRepository $repository ,EntityManagerInterface $em): Response 
+    {
+        
+        $categorys = $repository->findAll();
         return $this->render('admin/category/index.html.twig' , [
-            'categorys' => $repository->findAll()
+            'categorys' => $categorys
         ]);
 
     }
@@ -26,12 +29,16 @@ class CategoryController extends AbstractController {
     public function create(Request $request , EntityManagerInterface $em){
 
         $category = new Category();
-        $form = $this->createForm(CategoryType::class , $category);
-        $form->handleRequest($request);
+        $form = $this->createForm(CategoryType::class, $category , [
+            'allow_extra_fields' => true, 
+        ]);
+         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
+            $category->setCreatedAt(new \DateTimeImmutable());
+            $category->setUpdatedAt(new \DateTimeImmutable());
             $em->persist($category);
             $em->flush();
-            $this->addFlash('seccess' , 'La categorie a bien été créée');
+            $this->addFlash('success' , 'La categorie a bien été créée');
             return $this->redirectToRoute('admin.category.index');
 
         }
@@ -42,11 +49,13 @@ class CategoryController extends AbstractController {
 
     #[Route("/{id}" , name: 'edit' , requirements: ['id' => Requirement::DIGITS] , methods: ['GET' , 'POST'])]
     public function edit(Request $request , Category $category, EntityManagerInterface $em){
-        $form = $this->createForm(CategoryType::class , $category );
+        $form = $this->createForm(CategoryType::class , $category , [
+            'allow_extra_fields' => true, ]);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
+            $category->setUpdatedAt(new \DateTimeImmutable());
             $em->flush();
-            $this->addFlash('seccess' , 'La categorie a bien été modifier');
+            $this->addFlash('success' , 'La categorie a bien été modifier');
             return $this->redirectToRoute('admin.category.index');
 
         }

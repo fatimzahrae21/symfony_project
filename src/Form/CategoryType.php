@@ -20,7 +20,7 @@ class CategoryType extends AbstractType
     {
         $builder
             ->add('name' ,TextType::class , [
-                'empty_data' => ''])
+                'empty_data' => '',])
             ->add('slug'  ,TextType::class , [
                 'required' => false,
                 'empty_data' => ''

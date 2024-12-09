@@ -4,9 +4,8 @@ namespace App\Controller\admin;
 
 use App\Entity\Recipe;
 use App\Form\RecipeType;
+use App\Repository\CategoryRepository;
 use App\Repository\RecipeRepository;
-use DateTimeImmutable;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,13 +13,19 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 
-#[Route("/admin/recettes" , name: 'admin.recipe.')]
+
 class RecipeController extends AbstractController
 {
-    #[Route('/', name: 'index')]
-    public function index(RecipeRepository $repository, EntityManagerInterface $em): Response
+    #[Route('/admin/recipe', name: 'admin.recipe.index', methods: ['GET'])]
+
+    public function index(RecipeRepository $repository, CategoryRepository $categoryRepository ,EntityManagerInterface $entityManager): Response
     {
+        // $platPrincip = $categoryRepository->findOneBy(['slug'=>'palt-principal']);
+        // $pates = $repository->findOneBy(['slug'=>'riz-et-lait']);
+        // $pates->setCategory($platPrincip);
+        // $entityManager->flush();
        $recipes = $repository->findAll();
+
 
         // $recipes = $repository->findWithDurationLowerThan(5);
 //-----------------ajouter---------------------------------------
@@ -39,7 +44,7 @@ class RecipeController extends AbstractController
 //         $em->persist($recipe); // added from chat gpt 
 //         $em->flush();
 //---------------suppremer-----------------------------------
-        // $em-> remove($recipes[1]);
+        // $em-> remove($recipes[17]);
         // $em->flush();
 //-------------------
   //dd($repository->findTotalDuration());
@@ -55,16 +60,19 @@ class RecipeController extends AbstractController
             ]
         );
     }
-    #[Route('/create' , name: 'create')]
+
+   #[Route('/admin/recipe/create', name: 'admin.recipe.create', methods: ['GET', 'POST'])]
+
     public function create(Request $request , EntityManagerInterface $em){
 
-        $recipe = new Recipe();
-        $form = $this->createForm(RecipeType::class , $recipe);
+        $recipes = new Recipe();
+        $form = $this->createForm(RecipeType::class , $recipes , [
+            'allow_extra_fields' => true, ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()){
-            $recipe->setCreatedAt(new \DateTimeImmutable());
-            $recipe->setUpdatedAt(new \DateTimeImmutable());
-            $em->persist($recipe);
+            $recipes->setCreatedAt(new \DateTimeImmutable());
+            $recipes->setUpdatedAt(new \DateTimeImmutable());
+            $em->persist($recipes);
             $em->flush();
             $this->addFlash('success' , 'la recette a bien ete ajouter');
             return $this->redirectToRoute('admin.recipe.index');
@@ -87,12 +95,15 @@ class RecipeController extends AbstractController
 
     //     ]);
     // }
-    #[Route('/{id}' , name: 'edit' , methods: ['GET' , 'POST'] , requirements: ['id' => Requirement::DIGITS]) ]
-    public function edit(Recipe $recipe , Request $request , EntityManagerInterface $em){
-        $form =  $this->createForm(RecipeType::class , $recipe);
+    #[Route('/admin/recipe/{id}', name: 'admin.recipe.edit', methods: ['GET', 'POST'], requirements: ['id' => '\d+'])]
+
+    public function edit(Recipe $recipes , Request $request , EntityManagerInterface $em){
+        $form =  $this->createForm(RecipeType::class , $recipes , [
+            'allow_extra_fields' => true, ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()){
-            $recipe->setUpdatedAt(new \DateTimeImmutable());
+
+            $recipes->setUpdatedAt(new \DateTimeImmutable());
             $em ->flush();
             $this->addFlash('success' , 'La recette a bien ete modifier');
 
@@ -100,7 +111,7 @@ class RecipeController extends AbstractController
 
         }
         return $this->render('admin/recipe/edit.html.twig' , [
-            'recipe' => $recipe ,
+            'recipe' => $recipes ,
             'form' => $form
 
         ]);
@@ -108,16 +119,19 @@ class RecipeController extends AbstractController
      
   
 
-    #[Route('/{id}' , name: 'delete' , methods: ['DELETE'] , requirements: ['id' => Requirement::DIGITS] )]
+    #[Route('/admin/recipe/delete/{id}', name: 'admin.recipe.delete', methods: ['DELETE'], requirements: ['id' => '\d+'])]
 
-    public function remove(Recipe $recipe , EntityManagerInterface $em)
+    public function remove(Request $request,RecipeRepository $repository ,$id , Recipe $recipes, EntityManagerInterface $em): Response
     {
-        $em->remove($recipe);
+        $recipes = $repository->find($id);
+        $em->remove($recipes);
         $em->flush();
-        $this->addFlash('success' , 'La recette a bien ete supprimée');
+        $this->addFlash('success' , 'La recipe a bien été supprimée');
         return $this->redirectToRoute('admin.recipe.index');
     }
+    
 
+    
 }
 
 
