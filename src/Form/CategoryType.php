@@ -3,6 +3,8 @@
 namespace App\Form;
 
 use App\Entity\Category;
+use App\Entity\Recipe;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -27,6 +29,13 @@ class CategoryType extends AbstractType
                 ])
            ->add('save' , SubmitType::class, [
             'label' => 'Enregistrer'
+           ])
+           ->add('recipes' , EntityType::class ,[
+            'class' => Recipe::class , 
+            'choice_label' => 'title' ,
+            'multiple' => true,
+            'by_reference' => false,
+            'expanded' => true, // checkbox
            ])
            ->addEventListener(FormEvents::PRE_SUBMIT, $this->listenerfactory->autoSlug('name'))
             ->addEventListener(FormEvents::PRE_SUBMIT, $this->listenerfactory->timestamps())

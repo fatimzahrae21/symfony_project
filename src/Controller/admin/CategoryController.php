@@ -53,6 +53,7 @@ class CategoryController extends AbstractController {
             'allow_extra_fields' => true, ]);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
+            
             $category->setUpdatedAt(new \DateTimeImmutable());
             $em->flush();
             $this->addFlash('success' , 'La categorie a bien été modifier');

@@ -2,12 +2,14 @@
 
 namespace App\Controller\admin;
 
+use App\Entity\Category;
 use App\Entity\Recipe;
 use App\Form\RecipeType;
 use App\Repository\CategoryRepository;
 use App\Repository\RecipeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -20,14 +22,32 @@ class RecipeController extends AbstractController
 
     public function index(RecipeRepository $repository, CategoryRepository $categoryRepository ,EntityManagerInterface $entityManager): Response
     {
-        // $platPrincip = $categoryRepository->findOneBy(['slug'=>'palt-principal']);
+        
+
+
+        $recipes = $repository->findWithDurationLowerThan(100);
+        // $category = (new Category())
+        // ->setUpdatedAt(new \DateTimeImmutable())
+        // ->setCreatedAt(new \DateTimeImmutable())
+        // ->setName('demo')
+        // ->setName('demo');
+        // $entityManager->persist($category);
+        // $recipes[0]->setCategory($category);
+        // $entityManager->flush();
+        return $this->render(
+            'admin/recipe/index.html.twig',
+            [
+                'recipes' =>  $recipes
+            ]
+        );
+        // $platPrincip = $categoryRepository->findOneBy(['slug'=>'plat-principale']);
         // $pates = $repository->findOneBy(['slug'=>'riz-et-lait']);
         // $pates->setCategory($platPrincip);
         // $entityManager->flush();
-       $recipes = $repository->findAll();
-
-
-        // $recipes = $repository->findWithDurationLowerThan(5);
+       
+      //  $recipes = $repository->findAll();
+        // $recipes[0]->getCategory()->getName();
+        // dd($recipes[0]->getCategory());
 //-----------------ajouter---------------------------------------
 //         $recipe = new Recipe();
 //         $recipe->setTitle('Pàte bolognaise')
@@ -53,12 +73,7 @@ class RecipeController extends AbstractController
 // $em->flush();
 
 
-        return $this->render(
-            'admin/recipe/index.html.twig',
-            [
-                'recipes' =>  $recipes
-            ]
-        );
+        
     }
 
    #[Route('/admin/recipe/create', name: 'admin.recipe.create', methods: ['GET', 'POST'])]
@@ -97,13 +112,20 @@ class RecipeController extends AbstractController
     // }
     #[Route('/admin/recipe/{id}', name: 'admin.recipe.edit', methods: ['GET', 'POST'], requirements: ['id' => '\d+'])]
 
-    public function edit(Recipe $recipes , Request $request , EntityManagerInterface $em){
-        $form =  $this->createForm(RecipeType::class , $recipes , [
+    public function edit(Recipe $recipe , Request $request , EntityManagerInterface $em){
+        $form =  $this->createForm(RecipeType::class , $recipe , [
             'allow_extra_fields' => true, ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()){
-
-            $recipes->setUpdatedAt(new \DateTimeImmutable());
+            /** @var UploadedFile $file */
+            $file = $form->get('thumbnailFile')->getData();
+            $filename = $recipe->getId() . '.' . $file->getClientOriginalExtension();
+            $file->move($this->getParameter('kernel.project_dir') . '/public/recettes/images', $filename);
+            $recipe->setThumbnail($filename);
+        
+            // dd($file->getClientOriginalName(), $file->getClientOriginalExtension());
+        
+            $recipe->setUpdatedAt(new \DateTimeImmutable());
             $em ->flush();
             $this->addFlash('success' , 'La recette a bien ete modifier');
 
@@ -111,7 +133,7 @@ class RecipeController extends AbstractController
 
         }
         return $this->render('admin/recipe/edit.html.twig' , [
-            'recipe' => $recipes ,
+            'recipe' => $recipe ,
             'form' => $form
 
         ]);
