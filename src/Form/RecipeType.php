@@ -5,7 +5,7 @@ namespace App\Form;
 use App\Entity\Category;
 use App\Entity\Recipe;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\DomCrawler\Image;
+use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PreSubmitEvent;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -31,12 +31,7 @@ class RecipeType extends AbstractType
                 'required' => false ,
                 // 'constraints' => new Length(min: 10)
             ])
-            ->add('thumbnailFile' , FileType::class ,[
-                'mapped' => false,
-                'constraints' => [
-                 
-                ]
-            ])
+            ->add('thumbnailFile' , FileType::class )
             ->add('category' , EntityType::class , [
                 'class' => Category::class,
                 'expanded' => true,

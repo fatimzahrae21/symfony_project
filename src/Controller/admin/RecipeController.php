@@ -9,24 +9,30 @@ use App\Repository\CategoryRepository;
 use App\Repository\RecipeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-
+  #[IsGranted('ROLE_ADMIN')]
 class RecipeController extends AbstractController
 {
     #[Route('/admin/recipe', name: 'admin.recipe.index', methods: ['GET'])]
-
+  
+    
     public function index(RecipeRepository $repository, CategoryRepository $categoryRepository ,EntityManagerInterface $entityManager): Response
     {
         
-
-
+        
+        // $this->denyAccessUnlessGranted('ROLE_USER');
         $recipes = $repository->findWithDurationLowerThan(100);
-        // $category = (new Category())
+        return $this->render(
+            'admin/recipe/index.html.twig',
+            [
+                'recipes' =>  $recipes
+            ]
+        ); 
+          // $category = (new Category())
         // ->setUpdatedAt(new \DateTimeImmutable())
         // ->setCreatedAt(new \DateTimeImmutable())
         // ->setName('demo')
@@ -34,12 +40,6 @@ class RecipeController extends AbstractController
         // $entityManager->persist($category);
         // $recipes[0]->setCategory($category);
         // $entityManager->flush();
-        return $this->render(
-            'admin/recipe/index.html.twig',
-            [
-                'recipes' =>  $recipes
-            ]
-        );
         // $platPrincip = $categoryRepository->findOneBy(['slug'=>'plat-principale']);
         // $pates = $repository->findOneBy(['slug'=>'riz-et-lait']);
         // $pates->setCategory($platPrincip);
@@ -116,12 +116,12 @@ class RecipeController extends AbstractController
         $form =  $this->createForm(RecipeType::class , $recipe , [
             'allow_extra_fields' => true, ]);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()){
-            /** @var UploadedFile $file */
-            $file = $form->get('thumbnailFile')->getData();
-            $filename = $recipe->getId() . '.' . $file->getClientOriginalExtension();
-            $file->move($this->getParameter('kernel.project_dir') . '/public/recettes/images', $filename);
-            $recipe->setThumbnail($filename);
+         if ($form->isSubmitted() && $form->isValid()){
+        //     /** @var UploadedFile $file */
+        //     $file = $form->get('thumbnailFile')->getData();
+        //     $filename = $recipe->getId() . '.' . $file->getClientOriginalExtension();
+        //     $file->move($this->getParameter('kernel.project_dir') . '/public/recettes/images', $filename);
+        //     $recipe->setThumbnail($filename);
         
             // dd($file->getClientOriginalName(), $file->getClientOriginalExtension());
         

@@ -6,9 +6,9 @@
  
 
   <h1>{{ recipe.title}} </h1>
-<p>
-  <img src="/recettes/images/{{ recipe.thumbnail }}" >
-</p>
+
+  <img src="{{ vich_uploader_asset(recipe, 'thumbnailFile') }}" >
+
 
  {{  form_start(form) }}
 
