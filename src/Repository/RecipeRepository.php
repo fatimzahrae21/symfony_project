@@ -4,10 +4,17 @@ namespace App\Repository;
 
 use App\Entity\Recipe;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @extends ServiceEntityRepository<Recipe>
+ *
+ * @method Recipe|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Recipe|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Recipe[]    findAll()
+ * @method Recipe[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class RecipeRepository extends ServiceEntityRepository
 {
@@ -16,6 +23,21 @@ class RecipeRepository extends ServiceEntityRepository
         parent::__construct($registry, Recipe::class);
     }
 
+    public function paginateRecipes(Request $request): Paginator
+    {
+        // Récupérer la page depuis les paramètres de la requête (avec une valeur par défaut de 1)
+        $page = $request->query->getInt('page', 1);
+        $limit = 2; // Nombre de résultats par page (fixe ici, ou récupérer dynamiquement si besoin)
+    
+        return new Paginator(
+            $this->createQueryBuilder('r')
+                ->setFirstResult(($page - 1) * $limit) // Calcul de l'offset
+                ->setMaxResults($limit) // Nombre de résultats par page
+                ->getQuery()
+                ->setHint(Paginator::HINT_ENABLE_DISTINCT, false), // Option pour éviter les doublons
+            false
+        );
+    }
 
     public function findTotalDuration(){
         return $this->createQueryBuilder('r')

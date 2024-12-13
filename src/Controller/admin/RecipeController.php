@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Controller\admin;
-
 use App\Entity\Category;
 use App\Entity\Recipe;
 use App\Form\RecipeType;
@@ -20,16 +19,19 @@ class RecipeController extends AbstractController
     #[Route('/admin/recipe', name: 'admin.recipe.index', methods: ['GET'])]
   
     
-    public function index(RecipeRepository $repository, CategoryRepository $categoryRepository ,EntityManagerInterface $entityManager): Response
+    public function index(RecipeRepository $repository, CategoryRepository $categoryRepository ,Request $request,EntityManagerInterface $entityManager): Response
     {
         
-        
+        $page = $request->query->getInt('page' , 1);
         // $this->denyAccessUnlessGranted('ROLE_USER');
-        $recipes = $repository->findWithDurationLowerThan(100);
+        $recipes = $repository->paginateRecipes($request);
+        $maxPage = ceil($recipes->count() / 2);
         return $this->render(
             'admin/recipe/index.html.twig',
             [
-                'recipes' =>  $recipes
+                'recipes' =>  $recipes,
+                'maxPage' => $maxPage,
+                'page' => $page
             ]
         ); 
           // $category = (new Category())
