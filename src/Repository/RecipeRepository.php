@@ -6,6 +6,8 @@ use App\Entity\Recipe;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\Pagination\PaginationInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -18,25 +20,31 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class RecipeRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry , private PaginatorInterface $paginator)
     {
         parent::__construct($registry, Recipe::class);
     }
 
-    public function paginateRecipes(Request $request): Paginator
-    {
-        // Récupérer la page depuis les paramètres de la requête (avec une valeur par défaut de 1)
-        $page = $request->query->getInt('page', 1);
-        $limit = 2; // Nombre de résultats par page (fixe ici, ou récupérer dynamiquement si besoin)
+    public function paginateRecipes(Request $request): PaginationInterface
+    {   $page = $request->query->getInt('page', 1);
+         $limit = 20; // Nombre de résultats par page (fixe ici, ou récupérer dynamiquement si besoin)
     
-        return new Paginator(
-            $this->createQueryBuilder('r')
-                ->setFirstResult(($page - 1) * $limit) // Calcul de l'offset
-                ->setMaxResults($limit) // Nombre de résultats par page
-                ->getQuery()
-                ->setHint(Paginator::HINT_ENABLE_DISTINCT, false), // Option pour éviter les doublons
-            false
+        return $this->paginator->paginate(
+            $this->createQueryBuilder('r'),
+            $page,
+            $limit
+
         );
+        // Récupérer la page depuis les paramètres de la requête (avec une valeur par défaut de 1)
+      
+        // return new Paginator(
+        //     $this->createQueryBuilder('r')
+        //         ->setFirstResult(($page - 1) * $limit) // Calcul de l'offset
+        //         ->setMaxResults($limit) // Nombre de résultats par page
+        //         ->getQuery()
+        //         ->setHint(Paginator::HINT_ENABLE_DISTINCT, false), // Option pour éviter les doublons
+        //     false
+        // );
     }
 
     public function findTotalDuration(){

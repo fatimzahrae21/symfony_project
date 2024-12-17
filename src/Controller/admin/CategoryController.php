@@ -14,7 +14,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 
 #[Route("/admin/category" , name: 'admin.category.')]
-#[IsGranted('ROLE_ADMIN')]
 
 class CategoryController extends AbstractController {
 
@@ -23,9 +22,8 @@ class CategoryController extends AbstractController {
     public function index(CategoryRepository $repository ,EntityManagerInterface $em): Response 
     {
         
-        $categorys = $repository->findAll();
         return $this->render('admin/category/index.html.twig' , [
-            'categorys' => $categorys
+            'categorys' => $repository->findAllWithCount()
         ]);
 
     }

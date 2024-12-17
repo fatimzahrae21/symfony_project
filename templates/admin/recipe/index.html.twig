@@ -10,15 +10,16 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Titre</th>
-                        <th>Category</th>
-
+        <th>{{ knp_pagination_sortable(recipes, 'ID' , 'r.id')}}</th>
+            <th>{{ knp_pagination_sortable(recipes, 'titre' , 'r.title')}}</th>
+            <th>Category</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         {% for recipe in recipes %}
             <tr>
+            <td>{{ recipe.id }}</td>
                 <td>
                     <a href="{{ path('admin.recipe.edit', { id: recipe.id }) }}">{{ recipe.title }}</a>
                 </td> 
@@ -42,7 +43,8 @@
     </tbody>
 </table>
 
-<div class="d-flex">
+{{ knp_pagination_render(recipes) }}
+{# <div class="d-flex">
 
 
     {% if page > 1 %}
@@ -54,5 +56,5 @@
     {% endif %}
 
 
-</div>
+</div> #}
 {% endblock %}

@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
@@ -19,18 +20,22 @@ class Recipe
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['recipes.index'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 5)]
+    #[Groups(['recipes.index' , 'recipes.create'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 5)]
-    private ?string $slug = null;
+    #[Groups(['recipes.index'])]
+    private ?string $slug = '';
 
    
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['recipes.show', 'recipes.create'])]
     private ?string $contenu = null;
 
     #[ORM\Column]
@@ -43,6 +48,7 @@ class Recipe
     #[Assert\NotBlank()]
     #[Assert\Positive()]
     #[Assert\LessThan(value: 100)]
+    #[Groups(['recipes.index', 'recipes.create'])]
     private ?int $duration = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -52,6 +58,7 @@ class Recipe
     private ?File $thumbnailFile = null ;
     
     #[ORM\ManyToOne(inversedBy: 'recipes')]
+    #[Groups(['recipes.show'])]
     private ?Category $category = null;
 
     

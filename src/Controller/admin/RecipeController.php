@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-  #[IsGranted('ROLE_ADMIN')]
 class RecipeController extends AbstractController
 {
     #[Route('/admin/recipe', name: 'admin.recipe.index', methods: ['GET'])]
@@ -22,16 +21,15 @@ class RecipeController extends AbstractController
     public function index(RecipeRepository $repository, CategoryRepository $categoryRepository ,Request $request,EntityManagerInterface $entityManager): Response
     {
         
-        $page = $request->query->getInt('page' , 1);
+        
         // $this->denyAccessUnlessGranted('ROLE_USER');
         $recipes = $repository->paginateRecipes($request);
-        $maxPage = ceil($recipes->count() / 2);
+    
         return $this->render(
             'admin/recipe/index.html.twig',
             [
                 'recipes' =>  $recipes,
-                'maxPage' => $maxPage,
-                'page' => $page
+               
             ]
         ); 
           // $category = (new Category())
